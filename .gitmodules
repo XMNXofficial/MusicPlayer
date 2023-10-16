@@ -1,0 +1,7 @@
+[submodule "externalLib/hello_imgui"]
+	path = externalLib/hello_imgui
+	url = https://github.com/XMNXofficial/hello_imgui
+	branch = hello_imgui_gif
+[submodule "externalLib/bass"]
+	path = externalLib/bass
+	url = https://github.com/XMNXofficial/bassaudio
