@@ -1,7 +1,4 @@
-﻿# CMakeList.txt: MusicPlayer 的 CMake 项目，在此处包括源代码并定义
-# 项目特定的逻辑。
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 # 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)
@@ -9,13 +6,34 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+#解决奇数个数中文在msvc上无法编译utf-8不带bom的代码文件
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 project ("MusicPlayer")
 
-# 将源代码添加到此项目的可执行文件。
-add_executable (MusicPlayer "MusicPlayer.cpp" "MusicPlayer.h")
+#导入hello_imgui
+	add_subdirectory(externalLib/hello_imgui)
+	list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
+	include(hello_imgui_add_app)
+
+#将源代码添加到此项目的可执行文件。
+	hello_imgui_add_app (${PROJECT_NAME} "MusicPlayer.cpp" "MusicPlayer.hpp")
+
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET MusicPlayer PROPERTY CXX_STANDARD 20)
 endif()
 
-# TODO: 如有需要，请添加测试并安装目标。
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(STATUS "link x64 BASS library")#64位机器
+	target_include_directories(${PROJECT_NAME} PUBLIC externalLib/bass)
+	target_link_directories(${PROJECT_NAME} PUBLIC externalLib/bass/win_64)
+	target_link_libraries(${PROJECT_NAME} PUBLIC bass.lib)
+
+else()
+    message(STATUS "link x86 BASS library")#32位机器
+	target_include_directories(${PROJECT_NAME} PUBLIC externalLib/bass)
+	target_link_directories(${PROJECT_NAME} PUBLIC externalLib/bass/win_32)
+	target_link_libraries(${PROJECT_NAME} PUBLIC bass.lib)
+endif()
