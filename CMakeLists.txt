@@ -17,8 +17,14 @@ project ("MusicPlayer")
 	list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
 	include(hello_imgui_add_app)
 
+add_subdirectory(modules)
+
+
+
 #将源代码添加到此项目的可执行文件。
 	hello_imgui_add_app (${PROJECT_NAME} "MusicPlayer.cpp" "MusicPlayer.hpp")
+
+
 
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -37,3 +43,6 @@ else()
 	target_link_directories(${PROJECT_NAME} PUBLIC externalLib/bass/win_32)
 	target_link_libraries(${PROJECT_NAME} PUBLIC bass.lib)
 endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC modules/core)
+target_link_libraries(${PROJECT_NAME} PUBLIC MP_core)

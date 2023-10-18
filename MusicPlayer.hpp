@@ -1,8 +1,17 @@
-﻿// MusicPlayer.h: 标准系统包含文件的包含文件
-// 或项目特定的包含文件。
+﻿#pragma once
+#include <hello_imgui.h>
+class MusicPlayer {
+private:
+	ImFont* gFont = nullptr;
+	static void ShowGUI();
+	static void ShowMENU();
+	static void ShowControl();//音乐控制面板
+	HelloImGui::DockingParams CreateDockingParams();
 
-#pragma once
+public:
+	MusicPlayer();
+	~MusicPlayer();
+	void RunGUI();
+};
 
-#include <iostream>
-
-// TODO: 在此处引用程序需要的其他标头。
+MusicPlayer MainAPP;
