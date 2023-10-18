@@ -1,1 +1,8 @@
-int testt();
+
+class core 
+{
+private:
+public:
+	core();
+	~core();
+};

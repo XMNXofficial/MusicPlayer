@@ -1,4 +1,12 @@
-int testt()
+#include "core.hpp"
+#include "bass.h"
+
+core::core()
 {
-	return 12345;
+
+}
+
+core::~core()
+{
+
 }

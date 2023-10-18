@@ -36,7 +36,7 @@ void MusicPlayer::ShowMENU()
 	}
 
 	ImGui::SameLine();
-	ImGui::Text("尹俊镔666");
+	ShowGUI();
 }
 
 void MusicPlayer::ShowControl()
@@ -44,9 +44,10 @@ void MusicPlayer::ShowControl()
 	//音乐状态显示
 	{
 		static const ImVec2 size_image = { 80,80 };
-		HelloImGui::ImageButtonFromAsset(R"(yl-image.jpg)", size_image);
+		ImGui::SetCursorPosY((ImGui::GetWindowSize().y - size_image.y) / 2);
+		HelloImGui::ImageFromAsset(R"(2.png)", size_image);
 		ImGui::SameLine();
-		ImGui::Text("やわらかな光");
+		ImGui::Text("想你时风起");
 	}
 
 
@@ -157,5 +158,5 @@ void MusicPlayer::RunGUI()
 	HelloImGui::Run(p);
 
 
-	
+
 }

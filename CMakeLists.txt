@@ -31,18 +31,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET MusicPlayer PROPERTY CXX_STANDARD 20)
 endif()
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message(STATUS "link x64 BASS library")#64位机器
-	target_include_directories(${PROJECT_NAME} PUBLIC externalLib/bass)
-	target_link_directories(${PROJECT_NAME} PUBLIC externalLib/bass/win_64)
-	target_link_libraries(${PROJECT_NAME} PUBLIC bass.lib)
-
-else()
-    message(STATUS "link x86 BASS library")#32位机器
-	target_include_directories(${PROJECT_NAME} PUBLIC externalLib/bass)
-	target_link_directories(${PROJECT_NAME} PUBLIC externalLib/bass/win_32)
-	target_link_libraries(${PROJECT_NAME} PUBLIC bass.lib)
-endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC modules/core)
 target_link_libraries(${PROJECT_NAME} PUBLIC MP_core)
