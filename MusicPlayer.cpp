@@ -2,6 +2,10 @@
 #include <hello_imgui.h>
 #include <core.hpp>
 #include <imgui_internal.h>
+
+fileSys* fileSystem = new fileSys;
+core* player = new core();
+
 int main()
 {
 	MainAPP.RunGUI();
@@ -22,10 +26,11 @@ void MusicPlayer::ShowMENU()
 	{
 		if (ImGui::MenuItem("从文件导入"))
 		{
-
+			bool temp=player->loadFile(fileSystem->OpenFile());
 		}
 		if (ImGui::MenuItem("从文件夹导入"))
 		{
+			bool temp = player->loadFile(R"(C:\Users\mchao\Music\1.ogg)");
 
 		}
 		if (ImGui::MenuItem("退出"))
@@ -45,7 +50,7 @@ void MusicPlayer::ShowControl()
 	{
 		static const ImVec2 size_image = { 80,80 };
 		ImGui::SetCursorPosY((ImGui::GetWindowSize().y - size_image.y) / 2);
-		HelloImGui::ImageFromAsset(R"(2.png)", size_image);
+		HelloImGui::ImageFromAsset(R"(1.jpg)", size_image);
 		ImGui::SameLine();
 		ImGui::Text("想你时风起");
 	}
@@ -65,14 +70,17 @@ void MusicPlayer::ShowControl()
 		ImGui::SameLine(startX_button, spacing_button);
 		if (ImGui::Button("继续/暂停", size_button))
 		{
-
+			bool temp=player->play();
 		}
 		ImGui::SameLine(startX_button, spacing_button);
 		if (ImGui::Button("下一首", size_button))
 		{
 
 		}
-
+		ImGui::SameLine();
+		if (ImGui::Button("test"))
+		{
+		}
 	}
 
 }
