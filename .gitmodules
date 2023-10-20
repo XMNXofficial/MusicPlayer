@@ -5,3 +5,6 @@
 [submodule "externalLib/bass"]
 	path = externalLib/bass
 	url = https://github.com/XMNXofficial/bassaudio
+[submodule "externalLib/nfd"]
+	path = externalLib/nfd
+	url = https://github.com/XMNXofficial/nativefiledialog-extended
