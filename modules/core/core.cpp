@@ -51,7 +51,7 @@ bool core::loadFile(const std::string filePath)
 
 audioInformation core::getAudioInfo()//取id3v2
 {
-	
+	return{};
 }
 
 bool core::play()

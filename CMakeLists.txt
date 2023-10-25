@@ -18,6 +18,8 @@ project ("MusicPlayer")
 		add_subdirectory(externalLib/hello_imgui)
 		list(APPEND CMAKE_MODULE_PATH ${HELLOIMGUI_CMAKE_PATH})
 		include(hello_imgui_add_app)
+	#导入taglib
+		add_subdirectory(externalLib/taglib)
 
 #导入模块
 	add_subdirectory(modules)
@@ -37,6 +39,8 @@ endif()
 #链接第三方库
 	#native-file-dialog-extended
 		target_include_directories(${PROJECT_NAME} PUBLIC nfd)
+	#tag
+		target_link_libraries(${PROJECT_NAME} PUBLIC tag)#备注:taglib需要install才能正常编译
 
 #链接模块
 	#MP_core
