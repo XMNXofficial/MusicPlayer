@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.12)
-
+set(NFD_BUILD_TESTS 1)
 
 # 如果支持，请为 MSVC 编译器启用热重载。
 if (POLICY CMP0141)
@@ -45,3 +45,6 @@ endif()
 	#MP_fileSys
 		target_include_directories(${PROJECT_NAME} PUBLIC modules/fileSys)
 		target_link_libraries(${PROJECT_NAME} PUBLIC MP_fileSys)
+	#MP_extern
+		target_include_directories(${PROJECT_NAME} PUBLIC modules/extern)
+		target_link_libraries(${PROJECT_NAME} PUBLIC MP_extern)

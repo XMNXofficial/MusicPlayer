@@ -29,6 +29,7 @@ message("找到了吗:"${Iconv_FOUND})
 target_include_directories(${PROJECT_NAME} PUBLIC ${Iconv_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Iconv_LIBRARIES})#D:/Dev_Libs/vcpkg/installed/x64-windows/debug/lib/iconv.lib
 string(REPLACE "debug/lib/iconv.lib" "debug/bin/charset-1.dll" DLL_PATH_charset ${Iconv_LIBRARY})#变量:DLL_PATH_charset
-string(REPLACE "debug/lib/iconv.lib" "debug/bin/iconv-2.dll" DLL_PATH_iconv ${Iconv_LIBRARY})#变量:DLL_PATH_iconv
+string(REPLACE "debug/lib/iconv.lib" "debug/bin/iconv-2.dll" DLL _PATH_iconv ${Iconv_LIBRARY})#变量:DLL_PATH_iconv
 install(FILES ${DLL_PATH_charset} DESTINATION ${CMAKE_BINARY_DIR})
 install(FILES ${DLL_PATH_iconv} DESTINATION ${CMAKE_BINARY_DIR})
+

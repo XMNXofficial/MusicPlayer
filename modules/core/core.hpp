@@ -1,6 +1,13 @@
 #pragma once
-#include "bass.h"
+#include <bass.h>
 #include <string>
+
+struct audioInformation
+{
+	std::string AudioName = "";
+	std::string SingerName = "";
+};
+
 class core
 {
 private:
@@ -11,6 +18,7 @@ public:
 	~core();
 	bool isInitOK() { return initOK; };
 	bool loadFile(const std::string filePath);
+	audioInformation getAudioInfo();
 	bool play();
 	bool pause();
 	bool stop();

@@ -2,9 +2,16 @@
 #include <hello_imgui.h>
 #include <core.hpp>
 #include <imgui_internal.h>
+#include <extern.hpp>
+#include <Windows.h>
+#include <ShObjIdl.h>
+#include<GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 
-fileSys* fileSystem = new fileSys;
-core* player = new core();
+//fileSys* fileSystem = new fileSys;
+//core* player = new core();
+ITaskbarList3* pTaskbarList = nullptr;
 
 int main()
 {
@@ -26,11 +33,10 @@ void MusicPlayer::ShowMENU()
 	{
 		if (ImGui::MenuItem("从文件导入"))
 		{
-			bool temp=player->loadFile(fileSystem->OpenFile());
+			bool temp = player->loadFile(fileSystem->OpenFile());
 		}
 		if (ImGui::MenuItem("从文件夹导入"))
 		{
-			bool temp = player->loadFile(R"(C:\Users\mchao\Music\1.ogg)");
 
 		}
 		if (ImGui::MenuItem("退出"))
@@ -70,7 +76,7 @@ void MusicPlayer::ShowControl()
 		ImGui::SameLine(startX_button, spacing_button);
 		if (ImGui::Button("继续/暂停", size_button))
 		{
-			bool temp=player->play();
+			bool temp = player->play();
 		}
 		ImGui::SameLine(startX_button, spacing_button);
 		if (ImGui::Button("下一首", size_button))
@@ -78,11 +84,89 @@ void MusicPlayer::ShowControl()
 
 		}
 		ImGui::SameLine();
+		static std::string temp_str = "";
 		if (ImGui::Button("test"))
 		{
+			temp_str = player->getAudioInfo().AudioName;
 		}
+		ImGui::Text("%s", temp_str.c_str());
+
 	}
 
+}
+
+void MusicPlayer::ShowDevelop()
+{
+
+	static int bf = 0;
+	static bool autoIncrease = false;
+	static bool initOK = false;
+
+	if (ImGui::Button("创建进度条"))
+	{
+		CoInitialize(nullptr);
+		CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_ITaskbarList3, (LPVOID*)&pTaskbarList);
+		initOK = true;
+
+	}
+
+	ImGui::SameLine();
+	static HWND hWnd = glfwGetWin32Window((GLFWwindow*)HelloImGui::GetRunnerParams()->backendPointers.glfwWindow);
+
+	if (ImGui::SliderInt("进度条", &bf, 0, 100))
+	{
+		if (pTaskbarList)
+		{
+			pTaskbarList->SetProgressValue(hWnd, bf, 100);
+		}
+	}
+	if (ImGui::Checkbox("自动模式", &autoIncrease))
+	{
+
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("正常状态"))
+	{
+		pTaskbarList->SetProgressState(hWnd, TBPF_NORMAL);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("暂停状态"))
+	{
+		pTaskbarList->SetProgressState(hWnd, TBPF_PAUSED);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("错误状态"))
+	{
+		pTaskbarList->SetProgressState(hWnd, TBPF_ERROR);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("加载状态"))
+	{
+		autoIncrease = false;
+		pTaskbarList->SetProgressState(hWnd, TBPF_INDETERMINATE);
+	}
+	static int index = 1;
+	if (autoIncrease)
+	{
+		if (bf <= 100)
+		{
+			bf += index * 1;
+		}
+		if (bf == 100)
+		{
+			index = -1;
+		}
+		if (bf == 1)
+		{
+			index = 1;
+		}
+		if (pTaskbarList)
+		{
+			pTaskbarList->SetProgressValue(hWnd, bf, 100);
+		}
+	}
 }
 
 HelloImGui::DockingParams MusicPlayer::CreateDockingParams()
@@ -100,6 +184,8 @@ HelloImGui::DockingParams MusicPlayer::CreateDockingParams()
 		DS_control.ratio = 0.10f;
 		DS_control.nodeFlags = ImGuiDockNodeFlags_NoTabBar;
 		DS.push_back(DS_control);
+
+
 	}
 
 	//在容器空间内创建窗口
@@ -110,6 +196,13 @@ HelloImGui::DockingParams MusicPlayer::CreateDockingParams()
 		DW_control.dockSpaceName = "control_dock";//容器名
 		DW_control.GuiFunction = [] {ShowControl(); };//界面渲染
 		DW.push_back(DW_control);
+
+		//在指定dock空间内创建指定窗口
+		HelloImGui::DockableWindow DW_develop;
+		DW_develop.label = "develop_window";//设置窗口标题
+		DW_develop.dockSpaceName = "MainDockSpace";//容器名
+		DW_develop.GuiFunction = [] {ShowDevelop(); };//界面渲染
+		DW.push_back(DW_develop);
 	}
 
 	DP.dockingSplits = DS;
@@ -151,6 +244,8 @@ void MusicPlayer::RunGUI()
 		p.imGuiWindowParams.showMenu_View = false;
 		p.imGuiWindowParams.rememberStatusBarSettings = false;
 		p.imGuiWindowParams.rememberTheme = false;
+		p.rememberSelectedAlternativeLayout = false;
+		p.fpsIdling = { 9.0,false,false };
 	}
 	//对接函数
 	{

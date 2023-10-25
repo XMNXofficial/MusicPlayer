@@ -32,7 +32,7 @@ bool core::loadFile(const std::string filePath)
 	size_t in_length = strlen(temp_in) + 1;
 	size_t out_buffer_length = 1024;
 	iconv_t temp_iconv = iconv_open("wchar_t", "UTF-8");
-	int temp_code = iconv(temp_iconv, &temp_in_backup, &in_length, (char**) & temp_out_backup, &out_buffer_length);
+	int temp_code = iconv(temp_iconv, &temp_in_backup, &in_length, (char**)&temp_out_backup, &out_buffer_length);
 	iconv_close(temp_iconv);
 	stream = BASS_StreamCreateFile(FALSE, temp_out, 0, 0, 0);
 	if (stream)
@@ -45,6 +45,13 @@ bool core::loadFile(const std::string filePath)
 	}
 	delete[]temp_in;
 	delete[]temp_out;
+}
+
+
+
+audioInformation core::getAudioInfo()//取id3v2
+{
+	
 }
 
 bool core::play()

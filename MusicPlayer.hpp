@@ -9,6 +9,7 @@ private:
 	static void ShowGUI();
 	static void ShowMENU();
 	static void ShowControl();//音乐控制面板
+	static void ShowDevelop();
 	HelloImGui::DockingParams CreateDockingParams();
 public:
 	MusicPlayer();
