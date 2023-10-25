@@ -8,3 +8,6 @@
 [submodule "externalLib/nfd"]
 	path = externalLib/nfd
 	url = https://github.com/XMNXofficial/nativefiledialog-extended
+[submodule "externalLib/sqlite"]
+	path = externalLib/sqlite
+	url = https://github.com/XMNXofficial/sqlite
