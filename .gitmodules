@@ -11,3 +11,6 @@
 [submodule "externalLib/sqlite"]
 	path = externalLib/sqlite
 	url = https://github.com/XMNXofficial/sqlite
+[submodule "externalLib/taglib"]
+	path = externalLib/taglib
+	url = https://github.com/XMNXofficial/taglib
