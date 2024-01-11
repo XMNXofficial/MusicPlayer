@@ -47,6 +47,10 @@ bool core::loadFile(const std::string filePath)
 	delete[]temp_out;
 }
 
+bool core::loadFolder(const std::string folderPath)
+{
+	return false;
+}
 
 
 audioInformation core::getAudioInfo()//取id3v2
@@ -81,6 +85,18 @@ bool core::pause()
 bool core::stop()
 {
 	if (BASS_ChannelStop(stream))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool core::isPlaying()
+{
+	if (BASS_ChannelIsActive(stream) == BASS_ACTIVE_PLAYING)
 	{
 		return true;
 	}

@@ -10,7 +10,14 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "cmakeToolchain": "D:/Dev_Libs/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      "cmakeToolchain": "D:/Dev_Libs/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "variables": [
+        {
+          "name": "HELLOIMGUI_WIN32_NO_CONSOLE",
+          "value": "False",
+          "type": "BOOL"
+        }
+      ]
     }
   ]
 }

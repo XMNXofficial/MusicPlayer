@@ -1,38 +1,78 @@
 #include "fileSys.hpp"
 #include <nfd.h>
+#include "nfd.hpp"
+#include <filesystem>
+#include<iostream>
+#include<codecvt>
+#include<locale>
 fileSys::fileSys()
 {
-	NFD_Init();
 }
 
 fileSys::~fileSys()
 {
-	NFD_Quit();
 }
 
-std::string fileSys::OpenFile()
+std::string fileSys::OpenFileDialog()
 {
-	nfdchar_t* outPath;
-	nfdfilteritem_t filterItem[1] = { {"音乐文件", "mp3,flac,ogg,m4a"} };
-	nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, NULL);
+	NFD::Guard nfdGuard;
+	NFD::UniquePath outPath;
+	nfdfilteritem_t filterItem[1] = { {"🎵音乐文件🎵", "mp3,flac,ogg"} };
+	nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 1);
 	if (result == NFD_OKAY)
 	{
-		//选择成功
-		result_path = std::string(outPath);
-		NFD_FreePath(outPath);
+		return outPath.get();
 	}
 	else if (result == NFD_CANCEL)
 	{
-		//用户取消
-		//无需释放outPath
-		result_path = "";
+		return "用户取消";
 	}
 	else
 	{
-		//报错
-		//无需释放outPath
-		result_path = "";
-		printf("Error: %s\n", NFD_GetError());
+		return NFD::GetError();
 	}
-	return result_path;
 }
+
+std::string fileSys::OpenFolderDialog()
+{
+	NFD::Guard nfdGuard;
+	NFD::UniquePath outPath;
+	nfdresult_t result = NFD::PickFolder(outPath);
+	if (result == NFD_OKAY)
+	{
+		return outPath.get();
+	}
+	else if (result == NFD_CANCEL)
+	{
+		return "";
+	}
+	else
+	{
+		return NFD::GetError();
+	}
+}
+
+std::vector<std::string> fileSys::GetFilePathFromFolderPath(std::string FolderPath)
+{
+	std::vector<std::string> result = {};
+	for (auto const& dir_entry : std::filesystem::recursive_directory_iterator(FolderPath))
+	{
+		if (!dir_entry.is_directory())
+		{
+			//printf("%s\t%s\n", dir_entry.path().extension().string().substr(1).c_str(), dir_entry.path().string().c_str());
+			for (auto& i : MusicFileType)
+			{
+				if (dir_entry.path().extension().string().substr(1) == i)
+				{
+					std::wstring path_ansi = dir_entry.path().wstring();
+					std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+					std::string utf8Str = converter.to_bytes(path_ansi);
+					result.push_back(utf8Str);
+					break;
+				}
+			}
+		}
+	}
+	return result;
+}
+

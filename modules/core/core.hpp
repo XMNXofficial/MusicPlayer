@@ -18,10 +18,12 @@ public:
 	~core();
 	bool isInitOK() { return initOK; };
 	bool loadFile(const std::string filePath);
+	bool loadFolder(const std::string folderPath);
 	audioInformation getAudioInfo();
 	bool play();
 	bool pause();
 	bool stop();
+	bool isPlaying();
 	float getVolume();
 	bool setVolume(float volume);
 };

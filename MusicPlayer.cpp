@@ -1,16 +1,18 @@
-﻿#include "MusicPlayer.hpp"
-#include <hello_imgui.h>
+#include "MusicPlayer.hpp"
 #include <core.hpp>
-#include <imgui_internal.h>
 #include <extern.hpp>
-#include <Windows.h>
+#include <GLFW/glfw3.h>
+#include <hello_imgui.h>
+#include <imgui_internal.h>
 #include <ShObjIdl.h>
-#include<GLFW/glfw3.h>
+#include <Windows.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
 //fileSys* fileSystem = new fileSys;
 //core* player = new core();
+
+
 ITaskbarList3* pTaskbarList = nullptr;
 
 int main()
@@ -33,11 +35,11 @@ void MusicPlayer::ShowMENU()
 	{
 		if (ImGui::MenuItem("从文件导入"))
 		{
-			bool temp = player->loadFile(fileSystem->OpenFile());
+			bool temp = player->loadFile(fileSystem->OpenFileDialog());
 		}
 		if (ImGui::MenuItem("从文件夹导入"))
 		{
-
+			MusicList = fileSystem->GetFilePathFromFolderPath(fileSystem->OpenFolderDialog());
 		}
 		if (ImGui::MenuItem("退出"))
 		{
@@ -58,7 +60,7 @@ void MusicPlayer::ShowControl()
 		ImGui::SetCursorPosY((ImGui::GetWindowSize().y - size_image.y) / 2);
 		HelloImGui::ImageFromAsset(R"(1.jpg)", size_image);
 		ImGui::SameLine();
-		ImGui::Text("想你时风起");
+		ImGui::Text("时代少年团");
 	}
 
 
@@ -76,20 +78,28 @@ void MusicPlayer::ShowControl()
 		ImGui::SameLine(startX_button, spacing_button);
 		if (ImGui::Button("继续/暂停", size_button))
 		{
-			bool temp = player->play();
+			if (player->isPlaying())
+			{
+				player->stop();
+			}
+			else
+			{
+				player->loadFile(selectedMusic);
+				bool temp = player->play();
+			}
 		}
 		ImGui::SameLine(startX_button, spacing_button);
 		if (ImGui::Button("下一首", size_button))
 		{
 
 		}
-		ImGui::SameLine();
-		static std::string temp_str = "";
-		if (ImGui::Button("test"))
-		{
-			temp_str = player->getAudioInfo().AudioName;
-		}
-		ImGui::Text("%s", temp_str.c_str());
+		//ImGui::SameLine();
+		//static std::string temp_str = "";
+		//if (ImGui::Button("test"))
+		//{
+		//	temp_str = player->getAudioInfo().AudioName;
+		//}
+		//ImGui::Text("%s", temp_str.c_str());
 
 	}
 
@@ -97,7 +107,6 @@ void MusicPlayer::ShowControl()
 
 void MusicPlayer::ShowDevelop()
 {
-
 	static int bf = 0;
 	static bool autoIncrease = false;
 	static bool initOK = false;
@@ -169,6 +178,59 @@ void MusicPlayer::ShowDevelop()
 	}
 }
 
+void MusicPlayer::ShowMusicLists()
+{
+	//if (ImGui::Button("test1"))
+	//{
+	//	MusicList = fileSystem->GetFilePathFromFolderPath("C:\\Users\\mchao\\Music");
+	//}
+	//ImGui::SameLine();
+	//if (ImGui::Button("test2"))
+	//{
+	//	printf("你好");
+	//}
+	if (ImGui::BeginTable("##Table_MusicLists", 1))
+	{
+		ImGui::TableSetupColumn("ID", 0, 0.0F, Table_MusicLists_ID_ID);
+		//ImGui::TableSetupColumn("SongTitle", 0, 0.0F, Table_MusicLists_ID_SongTitle);
+		//ImGui::TableSetupColumn("Singer", 0, 0.0F, Table_MusicLists_ID_Singer);
+		//ImGui::TableSetupColumn("Album", 0, 0.0F, Table_MusicLists_ID_Album);
+		ImGui::TableHeadersRow();
+
+		for (auto& i1 : MusicList)
+		{
+			int ColumnIndex = 0;
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(ColumnIndex++);
+			const char* temp = i1.c_str();
+			static int count = 0;
+			if (ImGui::Selectable(std::string("##123" + i1).c_str(), selectedMusic == i1))
+			{
+				if (selectedMusic != i1)
+				{
+					count = 0;
+				}
+				selectedMusic = i1;
+				count++;
+				if (count == 2)
+				{
+					if (player->isPlaying())
+					{
+						player->stop();
+					}
+					player->loadFile(selectedMusic);
+					bool temp = player->play();
+					count = 0;
+				}
+
+			}
+			ImGui::SameLine();
+			ImGui::Text("%s", temp);
+		}
+		ImGui::EndTable();
+	}
+}
+
 HelloImGui::DockingParams MusicPlayer::CreateDockingParams()
 {
 	HelloImGui::DockingParams DP;//docking总参数
@@ -194,15 +256,15 @@ HelloImGui::DockingParams MusicPlayer::CreateDockingParams()
 		HelloImGui::DockableWindow DW_control;
 		DW_control.label = "control_window";//设置窗口标题
 		DW_control.dockSpaceName = "control_dock";//容器名
-		DW_control.GuiFunction = [] {ShowControl(); };//界面渲染
+		DW_control.GuiFunction = [] { ShowControl(); };//界面渲染
 		DW.push_back(DW_control);
 
 		//在指定dock空间内创建指定窗口
-		HelloImGui::DockableWindow DW_develop;
-		DW_develop.label = "develop_window";//设置窗口标题
-		DW_develop.dockSpaceName = "MainDockSpace";//容器名
-		DW_develop.GuiFunction = [] {ShowDevelop(); };//界面渲染
-		DW.push_back(DW_develop);
+		HelloImGui::DockableWindow DW_MusicList;
+		DW_MusicList.label = "MusicLists_Window";//设置窗口标题
+		DW_MusicList.dockSpaceName = "MainDockSpace";//容器名
+		DW_MusicList.GuiFunction = [] { ShowMusicLists(); };//界面渲染
+		DW.push_back(DW_MusicList);
 	}
 
 	DP.dockingSplits = DS;
@@ -230,12 +292,14 @@ void MusicPlayer::RunGUI()
 	p.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
 
 	//加载字体
-	p.callbacks.LoadAdditionalFonts = [this]() {
-		ImFontGlyphRangesBuilder a;
-		static ImVector<ImWchar>b;
-		a.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
-		a.BuildRanges(&b);
-		gFont = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msyhbd.ttc", 25.0f, nullptr, b.Data); };
+	p.callbacks.LoadAdditionalFonts = [this]()
+		{
+			ImFontGlyphRangesBuilder a;
+			static ImVector<ImWchar>b;
+			a.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+			a.BuildRanges(&b);
+			gFont = ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msyhbd.ttc", 25.0f, nullptr, b.Data);
+		};
 	//设置imgui样式
 	{
 		p.imGuiWindowParams.showMenuBar = true;
